@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="az"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bilik yoxlama platforması — 11-ci sinif</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#eef1f8;--grid:#dde3f1;--c:#fff;--t:#14213d;--m:#5b6785;--b:#d3daea;--pen:#2742d9;--ok:#12805c;--bad:#c62828;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10152a;--grid:#1a2140;--c:#192042;--t:#eaeefb;--m:#9aa6cb;--b:#2b3560;--pen:#8ea0ff;--ok:#3ccf9a;--bad:#ff7b7b}}
+:root[data-theme="dark"]{--bg:#10152a;--grid:#1a2140;--c:#192042;--t:#eaeefb;--m:#9aa6cb;--b:#2b3560;--pen:#8ea0ff;--ok:#3ccf9a;--bad:#ff7b7b}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--t)}
+body{font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+main{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:26px;margin:8px 0 4px}h2{font-size:18px;margin:22px 0 8px}
+.m{color:var(--m);font-size:14px}
+.card{background:var(--c);border:1px solid var(--b);border-radius:10px;padding:14px;margin:8px 0;max-width:100%}
+.row{display:flex;align-items:center;gap:12px;justify-content:space-between;cursor:pointer}
+button{font:inherit;cursor:pointer;border:1px solid var(--b);background:var(--c);color:var(--t);border-radius:8px;padding:10px 14px;min-height:44px}
+button.p{background:var(--pen);border-color:var(--pen);color:#fff}button:disabled{opacity:.45;cursor:default}
+button:focus-visible{outline:3px solid var(--pen);outline-offset:2px}
+.bar{height:8px;background:var(--grid);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--pen)}
+.opt{display:flex;gap:10px;width:100%;text-align:left;margin:6px 0}.opt b{min-width:22px}
+.opt.s{border-color:var(--pen);box-shadow:inset 0 0 0 2px var(--pen)}
+.big{font-size:72px;font-weight:700;line-height:1;color:var(--pen);margin:6px 0}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.tp{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+</style></head><body><main id="app"></main>
+<script>
+const CUR={
+az:["Azərbaycan dili","Fonetika:Fonetika;Orfoqrafiya:Orfoqrafiya və orfoepiya;Leksika:Leksika,Söz yaradıcılığı;Morfologiya:İsim,Sifət,Say,Əvəzlik,Feil,Zərf,Köməkçi nitq hissələri;Sintaksis:Söz birləşmələri,Cümlə növləri,Cümlə üzvləri,Mürəkkəb cümlə,Vasitəsiz və vasitəli nitq;Digər bölmələr:Nitq mədəniyyəti,Üslubiyyət,Əməli yazı,Durğu işarələri"],
+mat:["Riyaziyyat","Ədədlər:Natural ədədlər,Çoxluqlar,Kəsrlər,Nisbət və faiz,Kompleks ədədlər;Cəbr:Çoxhədlilər,Rasional ifadələr,Tənliklər,Bərabərsizliklər,Silsilələr,Funksiyalar;Həndəsə:Üçbucaqlar,Çevrə,Çoxbucaqlılar,Fiqurların sahəsi,Vektorlar,Fəzada düz xətlər,Çoxüzlülər,Fırlanma cisimləri;Triqonometriya, üstlü, loqarifm:Triqonometrik funksiyalar,Triqonometrik tənliklər,Üstlü və loqarifmik;Analiz:Limit,Törəmə,İnteqral;Statistika və ehtimal:Statistika,Birləşmələr,Ehtimal"],
+eng:["İngilis dili","Grammar:Perfect tenses,Conditional sentences,Interrogative and negative,Passive Voice,Modal verbs,Conjunctions and prepositions,Gerund and Infinitive;Sentences:Making up sentences,Completing sentences;Lexical:Lexical tests;Skills:Listening,Reading,Writing"],
+fiz:["Fizika","Kinematika:Düzxətli hərəkət,Çevrə üzrə hərəkət;Dinamika:Nyuton qanunları,Cazibə qüvvəsi,Elastiklik və sürtünmə,Statika;Saxlama qanunları:İmpuls və enerji,Mexaniki iş və güc;Rəqslər:Rəqslər və dalğalar;Maye və qaz:Aero-hidrostatika,MKN və ideal qaz;İstilik:Termodinamika,Buxarlanma,Bərk cisimlər və mayelər"],
+inf:["İnformatika","Əsaslar:İnformatikanın əsasları,Say sistemləri,Alqoritm;Kompüter:Texniki təminat,Proqram təminatı,Əməliyyat sistemləri,Windows 11;Ofis:Word,Excel,PowerPoint,Access;Digər:Kompüter qrafikası,İnternet və şəbəkələr,Elektron hökumət,İnformasiya təhlükəsizliyi"]};
+// Sual bazası: [sual,[A,B,C,D,E],düzgünİndeks,izah]. Hər mövzu üçün 50-yə qədər genişləndirilə bilər.
+const Q={
+"Fonetika":[["Azərbaycan əlifbasında neçə hərf var?",["28","30","32","33","34"],2,"Müasir Azərbaycan əlifbası 32 hərfdən ibarətdir."],["Azərbaycan dilində neçə sait var?",["6","7","8","9","10"],3,"Saitlər: a, e, ə, i, ı, o, ö, u, ü — cəmi 9."],["Hansı sait qalın saitdir?",["ə","i","ı","ö","ü"],2,"Qalın saitlər: a, ı, o, u."]],
+"Törəmə":[["f(x)=x³ funksiyasının x=2 nöqtəsində törəməsi neçədir?",["6","8","12","16","24"],2,"f'(x)=3x², f'(2)=12."],["f(x)=x²+3x üçün f'(1) neçədir?",["3","4","5","6","7"],2,"f'(x)=2x+3, f'(1)=5."],["(sin x)' nəyə bərabərdir?",["−sin x","cos x","−cos x","tg x","1/cos²x"],1,"sin x-in törəməsi cos x-dir."]],
+"Düzxətli hərəkət":[["Sürəti 20 m/s olan cisim 5 s-də neçə metr yol gedər?",["4","25","100","15","200"],2,"S=v·t=20·5=100 m."],["Sükunətdən a=2 m/s² təcillə hərəkət edən cismin 6 s-dən sonrakı sürəti?",["3","8","12","24","36"],2,"v=a·t=2·6=12 m/s."],["Sükunətdən a=4 m/s² ilə hərəkət edən cisim 3 s-də neçə metr gedər?",["12","18","24","36","6"],1,"S=at²/2=4·9/2=18 m."]],
+"Say sistemləri":[["1010 ikilik ədədinin onluq qiyməti?",["8","10","12","5","20"],1,"8+2=10."],["15 onluq ədədinin ikilik yazılışı?",["1011","1101","1110","1111","1001"],3,"15=8+4+2+1 → 1111."],["1 bayt neçə bitdir?",["4","8","10","16","1024"],1,"1 bayt = 8 bit."]],
+"Passive Voice":[["The letter ___ yesterday.",["wrote","was written","is written","has written","writes"],1,"Keçmiş zaman passiv: was/were + V3."],["English is ___ all over the world.",["speak","spoke","spoken","speaking","speaks"],2,"Passiv: am/is/are + V3 (spoken)."],["The houses ___ by workers now.",["build","are built","are being built","were built","have build"],2,"İndi davam edən passiv: are being + V3."]]};
+[
+["Orfoqrafiya və orfoepiya","Hansı söz düzgün yazılıb?","həftə|həfdə|həfte|hefdə|həfta",0,"Düzgün yazılış: həftə."],
+["Leksika","“Böyük” sözünün antonimi hansıdır?","iri|kiçik|uca|geniş|nəhəng",1,"Antonim əks mənalı sözdür: böyük–kiçik."],
+["Söz yaradıcılığı","“Kitabçı” sözünün kökü hansıdır?","kitabçı|abçı|kitab|çı|kit",2,"Kök kitab, -çı isə şəkilçidir."],
+["İsim","Hansı söz xüsusi isimdir?","şəhər|çay|dağ|Bakı|ölkə",3,"Xüsusi isimlər tək varlığın adıdır və böyük hərflə yazılır."],
+["Sifət","Hansı söz sifətdir?","yazmaq|beş|mən|tez|qırmızı",4,"Sifət əşyanın əlamətini bildirir: qırmızı."],
+["Say","“Üçüncü” sözü hansı say növüdür?","Sıra|Miqdar|Kəsr|Toplu|Qeyri-müəyyən",0,"Sıra sayı -ıncı şəkilçisi ilə düzəlir."],
+["Əvəzlik","Hansı söz şəxs əvəzliyidir?","kim|biz|bu|heç kəs|hamı",1,"Şəxs əvəzlikləri: mən, sən, o, biz, siz, onlar."],
+["Feil","“Yazmaq” sözü hansı sualı cavablandırır?","nə|kim|nə etmək|necə|neçə",2,"Feil “nə etmək?” sualına cavab verir."],
+["Zərf","“Tez gəldi” cümləsində “tez” hansı nitq hissəsidir?","Sifət|Say|İsim|Zərf|Əvəzlik",3,"Hərəkətin tərzini bildirdiyi üçün zərfdir."],
+["Köməkçi nitq hissələri","Hansı söz qoşmadır?","və|ya|amma|ki|üçün",4,"“üçün” qoşmadır; digərləri bağlayıcıdır."],
+["Söz birləşmələri","“Qırmızı alma” birləşməsində tabe söz hansıdır?","qırmızı|alma|hər ikisi|heç biri|müəyyən deyil",0,"Tabe söz əsas sözü izah edən sözdür: qırmızı."],
+["Cümlə növləri","“Sən nə vaxt gələcəksən?” cümləsi məqsədə görə hansıdır?","Nəqli|Sual|Əmr|Nida|Arzu",1,"Sual cümləsidir."],
+["Cümlə üzvləri","“Uşaqlar bağda oynayırlar” cümləsində mübtəda hansıdır?","bağda|oynayırlar|uşaqlar|heç biri|bağda oynayırlar",2,"Mübtəda “kim?” sualına cavab verir."],
+["Mürəkkəb cümlə","Mürəkkəb cümlə ən azı neçə sadə cümlədən ibarətdir?","1|3|4|2|5",3,"Ən azı iki sadə cümlədən."],
+["Vasitəsiz və vasitəli nitq","Müəllifin sözləri vasitəsiz nitqdən əvvəl gəlirsə, aralarında hansı işarə qoyulur?","nöqtə|vergül|tire|durğu yoxdur|iki nöqtə",4,"İki nöqtə qoyulur."],
+["Nitq mədəniyyəti","Nitq mədəniyyətinin tələblərindən biri hansıdır?","Dəqiqlik və aydınlıq|Uzun danışmaq|Sürətli danışmaq|Çox təkrar|Yalnız yazı",0,"Nitq dəqiq və aydın olmalıdır."],
+["Üslubiyyət","Ərizə, əmr, protokol hansı üslubdadır?","Bədii|Rəsmi-işgüzar|Elmi|Publisist|Danışıq",1,"Rəsmi sənədlər rəsmi-işgüzar üslubdadır."],
+["Əməli yazı","Hansı əməli yazı növüdür?","Poema|Roman|Tərcümeyi-hal|Qəzəl|Hekayə",2,"Tərcümeyi-hal, ərizə, izahat əməli yazıdır."],
+["Durğu işarələri","Eynicinsli üzvlər arasında adətən hansı işarə qoyulur?","Nöqtə|Nida|Sual|Vergül|Tire",3,"Sadalamada vergül qoyulur."],
+["Natural ədədlər","36 və 48-in ƏBOB-u neçədir?","6|18|24|4|12",4,"36=12·3, 48=12·4, ƏBOB=12."],
+["Çoxluqlar","A={1,2,3}, B={2,3,4} olarsa A∩B nədir?","{2,3}|{1,4}|{1,2,3,4}|{3}|∅",0,"Kəsişmə ortaq elementlərdir."],
+["Kəsrlər","1/2 + 1/3 neçədir?","2/5|5/6|1/6|2/3|3/5",1,"3/6+2/6=5/6."],
+["Nisbət və faiz","200-ün 15%-i neçədir?","15|45|30|20|3",2,"200·0,15=30."],
+["Kompleks ədədlər","i² neçədir?","1|i|−i|−1|0",3,"i²=−1."],
+["Çoxhədlilər","(x+2)(x−2) ifadəsi nəyə bərabərdir?","x²+4|x²−4x+4|x²+4x+4|x−4|x²−4",4,"Kvadratların fərqi: x²−4."],
+["Rasional ifadələr","(x²−1)/(x−1) ifadəsini sadələşdir (x≠1).","x+1|x−1|x²|1|x",0,"(x−1)(x+1)/(x−1)=x+1."],
+["Tənliklər","x²−5x+6=0 tənliyinin köklərinin cəmi?","−5|5|6|−6|1",1,"Köklər 2 və 3, cəmi 5."],
+["Bərabərsizliklər","2x−4>0 bərabərsizliyinin həlli?","x<2|x>−2|x>2|x<−2|x>4",2,"2x>4, x>2."],
+["Silsilələr","Ar. silsilədə a₁=3, d=2 olarsa a₅ neçədir?","9|13|10|11|15",3,"a₅=3+4·2=11."],
+["Funksiyalar","f(x)=2x+1 üçün f(3) neçədir?","5|6|9|8|7",4,"2·3+1=7."],
+["Üçbucaqlar","Üçbucağın daxili bucaqlarının cəmi?","180°|90°|270°|360°|120°",0,"Həmişə 180°."],
+["Çevrə","Radiusu 5 olan çevrənin uzunluğu?","5π|10π|25π|20π|π",1,"C=2πr=10π."],
+["Çoxbucaqlılar","Düzgün altıbucaqlının daxili bucağı?","60°|135°|120°|108°|90°",2,"(6−2)·180°/6=120°."],
+["Fiqurların sahəsi","Əsası 10, hündürlüyü 6 olan üçbucağın sahəsi?","60|16|120|30|20",3,"S=10·6/2=30."],
+["Vektorlar","a(1;2) və b(3;4) vektorlarının cəmi?","(3;8)|(2;2)|(4;8)|(1;1)|(4;6)",4,"(1+3;2+4)=(4;6)."],
+["Fəzada düz xətlər","Nə kəsişən, nə də paralel olan düz xətlər necə adlanır?","Çarpaz|Perpendikulyar|Üst-üstə düşən|Bərabər|Mail",0,"Çarpaz düz xətlərdir."],
+["Çoxüzlülər","Kubun neçə təpəsi var?","6|8|12|4|10",1,"Kubun 8 təpə, 12 tili, 6 üzü var."],
+["Fırlanma cisimləri","Radiusu r olan kürənin həcmi?","πr³|4πr²|4πr³/3|2πr³|πr²h",2,"V=4πr³/3."],
+["Triqonometrik funksiyalar","sin30° neçədir?","√3/2|1|√2/2|1/2|0",3,"sin30°=1/2."],
+["Triqonometrik tənliklər","sin x = 1 tənliyinin [0;2π] intervalında həlli?","0|π|3π/2|2π|π/2",4,"x=π/2."],
+["Üstlü və loqarifmik","log₂8 neçədir?","3|2|4|8|16",0,"2³=8."],
+["Limit","lim(x→2)(x²−4)/(x−2) neçədir?","0|4|2|∞|1",1,"x+2 olur, limit 4."],
+["İnteqral","∫2x dx neçədir?","2x²+C|x+C|x²+C|2+C|x²/2+C",2,"∫2x dx=x²+C."],
+["Statistika","3, 5, 7, 9 ədədlərinin ədədi ortası?","5|7|8|6|24",3,"24/4=6."],
+["Birləşmələr","C(5,2) neçədir?","5|20|15|25|10",4,"5!/(2!·3!)=10."],
+["Ehtimal","Zər atılanda cüt ədəd düşmə ehtimalı?","1/2|1/6|1/3|2/3|1/4",0,"3 əlverişli hal / 6 = 1/2."],
+["Perfect tenses","She ___ already finished her homework.","have|has|had|is|was",1,"3-cü şəxs təkdə: has + V3."],
+["Conditional sentences","If it rains, we ___ at home.","stay|would stay|will stay|stayed|had stayed",2,"I tip şərt: will + V."],
+["Interrogative and negative","She ___ like coffee. (inkar)","don't|isn't|aren't|doesn't|hasn't",3,"3-cü şəxs: doesn't + V."],
+["Modal verbs","You ___ smoke here. It is forbidden.","must|may|can|needn't|mustn't",4,"Qadağan: mustn't."],
+["Conjunctions and prepositions","I was born ___ 2008.","in|on|at|by|for",0,"İllərlə in işlənir."],
+["Gerund and Infinitive","He enjoys ___ football.","play|playing|to play|played|plays",1,"enjoy + V-ing."],
+["Making up sentences","Hansı cümlə düzgündür?","She go to school.|She going to school.|She goes to school.|She gone school.|She go school.",2,"3-cü şəxs təkdə feilə -s artırılır."],
+["Completing sentences","I will call you when I ___ home.","will get|got|getting|get|would get",3,"Zaman cümləsində gələcək üçün Present Simple."],
+["Lexical tests","A synonym of “big” is ___.","small|tiny|thin|short|large",4,"big = large."],
+["Listening","What should you do first in a listening task?","Read the questions first|Skip the questions|Translate every word|Stop listening|Write an essay",0,"Əvvəlcə suallar oxunmalıdır."],
+["Reading","“Main idea” of a text means ___.","a small detail|the central point of the text|the title only|a new word|the last sentence",1,"Main idea mətnin əsas fikridir."],
+["Writing","Best opening of a formal letter?","Hey buddy!|What's up?|Dear Sir or Madam,|Yo!|Hi there",2,"Rəsmi məktub “Dear Sir or Madam,” ilə başlayır."],
+["Çevrə üzrə hərəkət","Periodu 2 s olan cismin tezliyi?","2 Hz|1 Hz|4 Hz|0,5 Hz|0,2 Hz",3,"ν=1/T=0,5 Hz."],
+["Nyuton qanunları","m=2 kq, a=3 m/s² olduqda qüvvə?","1,5 N|5 N|9 N|12 N|6 N",4,"F=ma=6 N."],
+["Cazibə qüvvəsi","m=5 kq cismin ağırlıq qüvvəsi (g=10)?","50 N|5 N|0,5 N|500 N|15 N",0,"F=mg=50 N."],
+["Elastiklik və sürtünmə","k=100 N/m yay 0,1 m uzananda elastiklik qüvvəsi?","1 N|10 N|100 N|0,1 N|1000 N",1,"F=kx=10 N."],
+["Statika","Qüvvə momenti M neyə bərabərdir (d – qüvvə qolu)?","F/d|F+d|F·d|F−d|F/d²",2,"M=F·d."],
+["İmpuls və enerji","m=2 kq, v=3 m/s cismin impulsu (kq·m/s)?","1,5|9|18|6|5",3,"p=mv=6."],
+["Mexaniki iş və güc","10 N qüvvə cismi 5 m yerdəyişdirərsə iş?","2 J|15 J|5 J|500 J|50 J",4,"A=F·s=50 J."],
+["Rəqslər və dalğalar","v=340 m/s, T=0,01 s olarsa dalğa uzunluğu?","3,4 m|0,34 m|34 m|340 m|3400 m",0,"λ=v·T=3,4 m."],
+["Aero-hidrostatika","10 m dərinlikdə suyun hidrostatik təzyiqi (ρ=1000, g=10)?","10 kPa|100 kPa|1 kPa|1000 kPa|10 Pa",1,"p=ρgh=100 000 Pa."],
+["MKN və ideal qaz","Sabit temperaturda qaz proseslərinə hansı qanun aiddir?","Şarl|Gey-Lüssak|Boyl-Mariott|Nyuton|Om",2,"İzotermik proses: Boyl–Mariott."],
+["Termodinamika","Termodinamikanın I qanunu: Q = ?","A−ΔU|ΔU−A|A/ΔU|ΔU+A|ΔU·A",3,"Q=ΔU+A."],
+["Buxarlanma","Temperatur artdıqca buxarlanma sürəti necə dəyişir?","azalır|dəyişmir|sıfır olur|əvvəl azalır|artır",4,"Sürət artır."],
+["Bərk cisimlər və mayelər","Kristal cisimlərin xüsusiyyəti?","Müəyyən ərimə temperaturu var|Ərimə temperaturu yoxdur|Axıcıdır|Formasızdır|Həmişə şəffafdır",0,"Kristallar müəyyən temperaturda əriyir."],
+["İnformatikanın əsasları","1 KB neçə baytdır?","100|1024|1000|512|8",1,"1 KB=1024 bayt."],
+["Alqoritm","Alqoritmin xassələrindən biri hansıdır?","Qeyri-dəqiqlik|Sonsuzluq|Diskretlik|Təsadüfilik|Mürəkkəblik",2,"Xassələr: diskretlik, dəqiqlik, kütləvilik, nəticəlilik."],
+["Texniki təminat","Hansı qurğu giriş qurğusudur?","Monitor|Printer|Dinamik|Klaviatura|Proyektor",3,"Klaviatura məlumat daxil edir."],
+["Proqram təminatı","Hansı tətbiqi proqramdır?","Windows|Linux|BIOS|Driver|Microsoft Word",4,"Word mətn redaktorudur."],
+["Əməliyyat sistemləri","Hansı əməliyyat sistemidir?","Linux|Excel|Chrome|Photoshop|Word",0,"Linux ƏS-dir."],
+["Windows 11","Faylı kopyalamaq üçün qısayol?","Ctrl+X|Ctrl+C|Ctrl+Z|Ctrl+V|Ctrl+S",1,"Ctrl+C kopyalayır."],
+["Word","Word-də mətni qalın etmək üçün qısayol?","Ctrl+I|Ctrl+U|Ctrl+B|Ctrl+P|Ctrl+K",2,"Ctrl+B – Bold."],
+["Excel","Excel-də düstur hansı işarə ilə başlayır?","#|@|$|=|&",3,"Düstur = ilə başlayır."],
+["PowerPoint","PowerPoint faylının uzantısı?",".docx|.xlsx|.accdb|.txt|.pptx",4,".pptx."],
+["Access","Access hansı proqram növüdür?","Verilənlər bazası idarəetmə sistemi|Mətn redaktoru|Brauzer|Qrafik redaktor|Antivirus",0,"Access VBİS-dir."],
+["Kompüter qrafikası","Hansı format rastr (piksel) qrafikasıdır?","SVG|JPG|CDR|AI|EPS",1,"JPG rastrdır; digərləri vektordur."],
+["İnternet və şəbəkələr","URL nəyi göstərir?","Parolu|Virusu|Resursun internet ünvanını|Faylın ölçüsünü|Prosessoru",2,"URL resursun ünvanıdır."],
+["Elektron hökumət","Hansı sayt Azərbaycanın elektron hökumət portalıdır?","google.az|ebay.az|kapital.az|e-gov.az|fb.az",3,"e-gov.az."],
+["İnformasiya təhlükəsizliyi","Hansı parol ən güclüdür?","12345678|parol|qwerty|adın+doğum ili|Aq7#kP2!vL9",4,"Uzun, hərf-rəqəm-simvol qarışığı."]
+].forEach(([t,x,o,i,e])=>Q[t]=[[x,o.split("|"),i,e]]);
+const A=(t,a)=>{Q[t]=(Q[t]||[]).concat(a.map(([x,o,i,e])=>[x,o.split("|"),i,e]))};
+A("Fonetika",[
+["Fonetika nəyi öyrənir?","Sözlərin mənasını|Dilin səs sistemini|Cümlə quruluşunu|Söz yaradıcılığını|Durğu işarələrini",1,"Fonetika dilin səs sistemini öyrənir."],
+["Nitq səsləri neçə əsas qrupa bölünür?","1|3|2|4|5",2,"Saitlər və samitlər."],
+["Azərbaycan əlifbasında neçə samit hərf var?","21|22|24|23|25",3,"32 hərfdən 9-u sait, 23-ü samitdir."],
+["Hansı hərf Azərbaycan əlifbasında yoxdur?","ə|q|ğ|ş|w",4,"Əlifbada w hərfi yoxdur."],
+["Hansı sait dodaqlanandır?","u|a|ı|e|i",0,"Dodaqlananlar: o, ö, u, ü."],
+["Hansı sözdə incə sait var?","dağ|göl|ata|su|yol",1,"göl sözündə ö incə saitdir."],
+["Hansı sözdə qalın sait var?","ev|göz|iş|dost|kül",3,"dost sözündə o qalın saitdir."],
+["Hansı samit kardır?","b|d|g|z|k",4,"Kar samitlər: ç, f, h, k, p, s, ş, t, x, q."],
+["Hansı samit cingiltilidir?","b|p|t|k|s",0,"b cingiltili samitdir."],
+["Hansı samit sonordur?","b|l|k|t|s",1,"Sonorlar: l, m, n, r, y."],
+["“ğ” hərfi hansı samitdir?","Kar|Sonor|Cingiltili|Sait|Dodaqlanan",2,"ğ cingiltili samitdir."],
+["Sözdə heca sayı nəyə görə müəyyən olunur?","Samitlərin sayına|Hərflərin sayına|Vurğuya|Saitlərin sayına|Şəkilçiyə",3,"Heca sayı sait sayına bərabərdir."],
+["“Azərbaycan” sözü neçə hecalıdır?","3|5|6|2|4",4,"A-zər-bay-can: 4 heca."],
+["“Məktəb” sözünün hecalara bölünməsi?","mək-təb|məkt-əb|mə-ktəb|məktə-b|m-ək-təb",0,"mək-təb."],
+["Hansı söz üç hecalıdır?","ağac|kitabça|qələm|kitab|dəftər",1,"ki-tab-ça: 3 heca."],
+["Bir hecada neçə sait ola bilər?","0|2|3|4|1",4,"Hecada yalnız bir sait olur."],
+["“Universitet” sözü neçə hecalıdır?","4|6|5|3|7",2,"u-ni-ver-si-tet: 5 heca."]]);
+A("Orfoqrafiya və orfoepiya",[
+["Orfoepiya nəyi öyrənir?","Düzgün yazını|Düzgün tələffüzü|Söz yaradıcılığını|Cümlə üzvlərini|Durğu işarələrini",1,"Orfoepiya düzgün tələffüz qaydalarıdır."],
+["Orfoqrafiya nəyi öyrənir?","Düzgün yazı qaydalarını|Tələffüzü|Sözün mənasını|Vurğunu|Cümlə tipini",0,"Orfoqrafiya düzgün yazı qaydalarıdır."],
+["Sözlərin düzgün yazılışı hansı lüğətdə yoxlanılır?","İzahlı|Frazeoloji|Orfoqrafiya|Sinonimlər|Etimoloji",2,"Orfoqrafiya lüğətində."],
+["Hansı düzgün yazılıb?","muəllim|müellim|müəllim|mühəllim|müəlim",2,"Düzgün: müəllim."],
+["Hansı düzgün yazılıb?","qazet|gəzet|kəzet|qəzet|qəzət",3,"Düzgün: qəzet."],
+["Hansı düzgün yazılıb?","mühendis|mühandis|müxəndis|mühəndiz|mühəndis",4,"Düzgün: mühəndis."],
+["Hansı düzgün yazılıb?","ictimai|içtimai|ictimay|ictimaa|içtimay",0,"Düzgün: ictimai."],
+["Hansı düzgün yazılıb?","əhəmiyət|əhəmiyyət|əhmiyyət|ehəmiyyət|əhəmmiyət",1,"Düzgün: əhəmiyyət."],
+["Hansı düzgün yazılıb?","musahibə|müsahibe|müsahibə|müsəhibə|mussahibə",2,"Düzgün: müsahibə."],
+["Hansı düzgün yazılıb?","ziyali|zıyalı|ziyalə|ziyalı|ziyallı",3,"Düzgün: ziyalı."],
+["Hansı düzgün yazılıb?","məsuliyət|məsuliyyet|mesuliyyət|məsulliyət|məsuliyyət",4,"Düzgün: məsuliyyət."],
+["Hansı düzgün yazılıb?","əlaqə|ələqə|əlaqe|elaqə|əllaqə",0,"Düzgün: əlaqə."],
+["Hansı düzgün yazılıb?","təcürbə|təcrübə|tecrübə|təcrübe|təcrubə",1,"Düzgün: təcrübə."],
+["Qoşa sözlər necə yazılır?","Bitişik|Ayrı|Defislə|Nöqtə ilə|Böyük hərflə",2,"Qoşa sözlər defislə yazılır: ata-ana."],
+["Hansı düzgün yazılıb?","yavaş yavaş|yavaşyavaş|Yavaş-Yavaş|yavaş-yavaş|yavaş_yavaş",3,"Təkrar sözlər defislə yazılır."],
+["Hansı düzgün yazılıb?","xəzər dənizi|Xəzər Dənizi|XƏZƏR dənizi|xəzər Dənizi|Xəzər dənizi",4,"Xüsusi adın ilk hərfi böyük, “dənizi” kiçik yazılır."],
+["Hansı düzgün yazılıb?","mart ayı|Mart ayı|MART ayı|Mart Ayı|mart Ayı",0,"Ay adları kiçik hərflə yazılır."],
+["Hansı düzgün yazılıb?","nizami gəncəvi|Nizami Gəncəvi|Nizami gəncəvi|nizami Gəncəvi|NİZAMİ Gəncəvi",1,"Ad və soyad böyük hərflə yazılır."],
+["Hansı düzgün yazılıb?","nə sə|nəs ə|nə-sə|nə,sə|nəsə",4,"Düzgün: nəsə (bitişik)."]]);
+A("Leksika",[
+["Leksika nəyi öyrənir?","Dilin söz tərkibini|Səsləri|Cümlə quruluşunu|Yazı qaydalarını|Durğu işarələrini",0,"Leksika dilin lüğət tərkibidir."],
+["“Gözəl” sözünün sinonimi hansıdır?","kobud|qəşəng|qısa|ağır|soyuq",1,"gözəl = qəşəng."],
+["“İsti” sözünün antonimi?","ilıq|yaxşı|soyuq|qaynar|yanıq",2,"isti ↔ soyuq."],
+["“Uzun” sözünün antonimi?","iri|dar|nazik|qısa|yüksək",3,"uzun ↔ qısa."],
+["“Açıq” sözünün antonimi?","yaxın|geniş|dolu|bərk|qapalı",4,"açıq ↔ qapalı."],
+["Hansı söz omonimdir?","yaz|kitab|stul|qələm|çörək",0,"yaz (fəsil) və yaz (feil)."],
+["“Ayaq” sözü (insan ayağı, masa ayağı) hansı növdür?","Omonim|Çoxmənalı söz|Sinonim|Antonim|Termin",1,"Bir söz bir neçə mənada işlənir."],
+["“Əl-ələ vermək” ifadəsi nə deməkdir?","Dalaşmaq|Salamlaşmaq|Birlikdə çalışmaq|Uzaqlaşmaq|Ayrılmaq",2,"Birlikdə çalışmaq."],
+["“Dil tapmaq” ifadəsi nə deməkdir?","Dil öyrənmək|Dil kəsmək|Susmaq|Anlaşmaq|Mübahisə etmək",3,"Anlaşmaq."],
+["Yeni yaranmış sözlər necə adlanır?","Arxaizm|Dialektizm|Termin|Frazeologizm|Neologizm",4,"Neologizm."],
+["Köhnəlmiş sözlər necə adlanır?","Arxaizm|Neologizm|Termin|Omonim|Sinonim",0,"Arxaizm."],
+["Yalnız bir bölgədə işlənən sözlər necə adlanır?","Termin|Dialektizm|Arxaizm|Antonim|Neologizm",1,"Dialektizm."],
+["Elm və sahə anlayışını bildirən söz necə adlanır?","Omonim|Dialektizm|Termin|Sinonim|Arxaizm",2,"Termin."],
+["Hansı söz ərəb mənşəlidir?","su|ağac|daş|kitab|göz",3,"kitab ərəb mənşəlidir."],
+["Hansı söz rus mənşəlidir?","kitab|su|göz|əl|stul",4,"stul rus dilindən alınıb."],
+["“Qızıl əllər” ifadəsində “qızıl” hansı mənadadır?","Məcazi|Düz|Termin|Arxaik|Dialekt",0,"Mahir mənasında məcazi."],
+["Sözlərin mənasını izah edən lüğət hansıdır?","Orfoqrafiya|İzahlı lüğət|Tərcümə|Frazeoloji|Etimoloji",1,"İzahlı lüğət."],
+["Hansı sözlər sinonimdir?","ağ–qara|böyük–iri|isti–soyuq|gün–gecə|yaxşı–pis",1,"böyük–iri sinonimdir."],
+["Hansı sözlər antonimdir?","böyük–iri|gözəl–qəşəng|ağ–qara|yol–cığır|tez–cəld",2,"ağ–qara antonimdir."]]);
+A("Söz yaradıcılığı",[
+["Sözün şəkilçisiz əsas hissəsi necə adlanır?","Kök|Şəkilçi|Heca|Qoşma|Əvəzlik",0,"Kök."],
+["Yeni mənalı söz yaradan şəkilçilər hansılardır?","Hal|Düzəldici|Şəxs|Xəbərlik|Sonluq",1,"Düzəldici (lüğəvi) şəkilçilər."],
+["Hansı söz sadədir?","balıqçı|kitabça|su|dostluq|yoldaş",2,"su – kök, şəkilçisiz."],
+["Hansı söz düzəltmə sözdür?","su|ev|dağ|balıqçı|göz",3,"balıq+çı."],
+["Hansı söz mürəkkəbdir?","kitab|su|ev|dost|ağsaqqal",4,"ağ+saqqal."],
+["Hansı söz qoşa sözdür?","ata-ana|kitab|işçi|yoldaş|su",0,"Qoşa sözlər defislə yazılır."],
+["Hansı söz təkrar sözdür?","yoldaş|yavaş-yavaş|ağsaqqal|ev|işçi",1,"Eyni sözün təkrarıdır."],
+["“Günəbaxan” sözü hansı növdür?","Sadə|Düzəltmə|Mürəkkəb|Qoşa|Təkrar",2,"gün+ə+baxan."],
+["“BMT” sözü hansı növdür?","Sadə|Düzəltmə|Qoşa|Abbreviatur|Təkrar",3,"Qısaldılmış (abbreviatur) sözdür."],
+["“Evsiz” sözündəki “-sız” nəyi bildirir?","Mənsubiyyəti|Çoxluğu|Kiçiltməni|Yerliyi|Yoxluğu",4,"-sız yoxluq bildirir."],
+["Hansı şəkilçi sifət düzəldir?","-lı|-çı|-lıq|-xana|-daş",0,"su+lu → sulu."],
+["“İşlə” sözündəki “-lə” hansı nitq hissəsi düzəldib?","İsim|Feil|Sifət|Say|Zərf",1,"iş+lə → feil."],
+["“Kitabça” sözündə “-ça” nəyi bildirir?","Çoxluğu|Yoxluğu|Kiçiltməni|Zamanı|Yerliyi",2,"Kiçiltmə."],
+["“Yoldaş” sözündəki “-daş” hansı mənanı verir?","Peşə sahibi|Yer|Zaman|Ortaqlıq|Alət",3,"yol+daş: ortaqlıq."],
+["“Dərmanxana” sözündə “-xana” nəyi bildirir?","Zaman|Kiçiltmə|Çoxluq|Əlamət|Yer",4,"Yer bildirir."],
+["“Dostluq” sözündəki “-luq” hansı nitq hissəsi düzəldir?","İsim|Feil|Sifət|Say|Zərf",0,"dost+luq → isim."],
+["“Naməlum” sözündəki “na-” nəyi bildirir?","Təsdiq|İnkar|Çoxluq|Kiçiltmə|Zaman",1,"İnkar."],
+["“İşçi” sözünün kökü hansıdır?","işçi|çı|iş|işç|i",2,"iş+çi."],
+["“Gözəllik” sözündə neçə şəkilçi var?","1|2|3|0|4",0,"gözəl+lik: 1 şəkilçi."]]);
+const parse=s=>s.split(";").map(x=>{const i=x.indexOf(":");return{n:x.slice(0,i),t:x.slice(i+1).split(",")}});
+let S;try{S=JSON.parse(localStorage.getItem("bp1"))}catch(e){}S=S||{t:{},s:{},c:0,w:0};
+const save=()=>{try{localStorage.setItem("bp1",JSON.stringify(S))}catch(e){}};
+const lvl=p=>p>=90?["✅","Çox yaxşı"]:p>=75?["🟢","Yaxşı"]:p>=50?["🟡","Orta"]:["🔴","Zəif"];
+const tp=n=>S.t[n]?S.t[n].p:null;
+const topics=k=>parse(CUR[k][1]).flatMap(s=>s.t);
+const sp=k=>{const v=topics(k).map(tp).filter(x=>x!==null);return v.length?Math.round(v.reduce((a,b)=>a+b)/v.length):null};
+const lab=p=>p===null?'<span class="m">hələ yoxlanmayıb</span>':`<b>${p}%</b> ${lvl(p)[0]} ${lvl(p)[1]}`;
+const bar=p=>`<div class="bar"><i style="width:${p||0}%"></i></div>`;
+const ring=p=>{const r=26,c=2*Math.PI*r;return`<svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--grid)" stroke-width="7"/><circle cx="32" cy="32" r="${r}" fill="none" stroke="var(--pen)" stroke-width="7" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-(p||0)/100)}" transform="rotate(-90 32 32)"/><text x="32" y="37" text-anchor="middle" font-size="14" font-weight="700" fill="var(--t)">${p===null?"—":p+"%"}</text></svg>`};
+const sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let V={v:"home"},T=null,R=null;
+const L="ABCDE";
+function go(v,x){V={v,x};render();scrollTo(0,0)}
+function start(n,retake){const b=Q[n];let ix=b.map((_,i)=>i);if(retake)ix=(S.t[n].wrong||[]).filter(i=>b[i]);T={n,retake,qs:sh(ix).slice(0,50).map(i=>({i,q:b[i]})),a:[],i:0};go("test")}
+function pick(j){T.a[T.i]=j;render()}
+function step(d){T.i+=d;render()}
+function startExam(){const qs=[];Object.keys(CUR).forEach(k=>{const a=topics(k).flatMap(t=>(Q[t]||[]).map((q,i)=>({i,q})));qs.push(...sh(a).slice(0,6))});T={n:"Sınaq imtahanı",exam:1,qs:sh(qs),a:[],i:0};go("test")}
+function finish(){if(T.exam){let c=0,w=0,e=0,items=[];T.qs.forEach((o,k)=>{const u=T.a[k];if(u===undefined)e++;else if(u===o.q[2])c++;else w++;items.push({q:o.q,u})});const p=Math.round(c/T.qs.length*100);S.x=S.x||[];S.x.push(p);save();R={n:T.n,c,w,e,p,items,exam:1};return go("res")}
+let c=0,w=0,e=0,wr=[],items=[];T.qs.forEach((o,k)=>{const u=T.a[k],ok=u===o.q[2];if(u===undefined)e++;else if(ok)c++;else w++;if(!ok)wr.push(o.i);items.push({q:o.q,u})});
+const n=T.qs.length,p=Math.round(c/n*100),old=S.t[T.n],k=Object.keys(CUR).find(k=>topics(k).includes(T.n)),before=sp(k);
+if(T.retake)S.t[T.n].wrong=wr;else S.t[T.n]={prev:old?old.p:null,p,wrong:wr};
+S.c+=c;S.w+=w;save();S.s[k]={prev:before,p:sp(k)};save();R={n:T.n,c,w,e,p,items,retake:T.retake};go("res")}
+function render(){const A=document.getElementById("app"),v=V.v;
+if(v==="home"){const all=Object.keys(CUR).flatMap(k=>topics(k).filter(t=>tp(t)!==null).map(t=>({k,t,p:tp(t)}))).sort((a,b)=>a.p-b.p).slice(0,3);
+A.innerHTML=`<h1>Salam! Biliklərini yoxla.</h1><div class="m">Həll edilən: ${S.c+S.w} sual · düzgün: ${S.c} · səhv: ${S.w}</div>`+
+Object.keys(CUR).map(k=>{const p=sp(k),s=S.s[k],d=s&&s.prev!==null&&s.p!==null?s.p-s.prev:null;return`<div class="card row" tabindex="0" onclick="go('subj','${k}')" onkeydown="if(event.key==='Enter')go('subj','${k}')"><div><b>${CUR[k][0]}</b><div class="m">${p===null?"hələ yoxlanmayıb":lvl(p)[1]}${d!==null?` · əvvəl ${s.prev}% → indi ${s.p}% (${d>=0?"+":""}${d}%)`:""}</div></div>${ring(p)}</div>`}).join("")+
+`<h2>Təkrar etməli olduğum mövzular</h2>`+(all.length?all.map((x,i)=>`<div class="card tp"><span>${i+1}. ${CUR[x.k][0]} — ${x.t}</span><b>${x.p}%</b></div>`).join(""):`<div class="card m">Bir mövzu testi bitirəndə zəif mövzular burada görünəcək.</div>`)+
+`<div class="card"><b>Sınaq imtahanı</b><div class="m">5 fənndən qarışıq 30 sual${S.x&&S.x.length?` · son nəticə: ${S.x[S.x.length-1]}%`:""}</div><button class="p" style="margin-top:8px" onclick="startExam()">Sınağa başla</button></div>`}
+if(v==="subj"){const k=V.x;A.innerHTML=`<button onclick="go('home')">← Ana səhifə</button><h1>${CUR[k][0]}</h1><div class="m">Fənn üzrə nəticə: ${lab(sp(k))}</div>`+parse(CUR[k][1]).map(s=>`<h2>${s.n}</h2>`+s.t.map(t=>{const p=tp(t),has=!!Q[t];return`<div class="card"><div class="row" ${has?`onclick="go('topic','${t}')"`:""}><div><b>${t}</b><div class="m">${has?lab(p):"suallar tezliklə"}</div></div>${has?"<span>›</span>":""}</div>${p!==null?bar(p):""}</div>`}).join("")).join("")}
+if(v==="topic"){const t=V.x,r=S.t[t],n=Math.min(50,Q[t].length);A.innerHTML=`<button onclick="history.length&&go('subj','${Object.keys(CUR).find(k=>topics(k).includes(t))}')">← Mövzular</button><h1>${t}</h1><div class="card">Bilik səviyyən: ${lab(r?r.p:null)}${r&&r.prev!==null?`<div class="m">Əvvəl: ${r.prev}% → İndi: ${r.p}%</div>`:""}</div><button class="p" onclick="start('${t}')">${n} suallıq testə başla</button> ${r&&r.wrong&&r.wrong.length?`<button onclick="start('${t}',1)">Səhv etdiyim sualları təkrar et (${r.wrong.length})</button>`:""}<p class="m">Bu mövzuda hazırda ${Q[t].length} sual var; test bazadakı suallardan (ən çoxu 50) təsadüfi seçilir.</p>`}
+if(v==="test"){const o=T.qs[T.i],u=T.a[T.i],n=T.qs.length,left=n-T.a.filter(x=>x!==undefined).length;A.innerHTML=`<div class="m">${T.n} · sual ${T.i+1}/${n} · cavabsız: ${left}</div>${bar((T.i+1)/n*100)}<div class="card"><b>${o.q[0]}</b></div>`+o.q[1].map((x,j)=>`<button class="opt ${u===j?"s":""}" onclick="pick(${j})" aria-pressed="${u===j}"><b>${L[j]}</b><span>${x}</span></button>`).join("")+`<div class="row" style="margin-top:12px"><button ${T.i?"":"disabled"} onclick="step(-1)">← Əvvəlki</button>${T.i<n-1?`<button class="p" onclick="step(1)">Növbəti →</button>`:`<button class="p" onclick="finish()">Testi bitir</button>`}</div>`}
+if(v==="res"){A.innerHTML=`<div class="card" style="text-align:center"><div class="m">${R.n}${R.retake?" · təkrar test":""}</div><div class="big">${R.p}%</div><div><span class="ok">${R.c} düzgün</span> · <span class="bad">${R.w} səhv</span> · ${R.e} boş</div><p>${R.exam?"Sınaq nəticən":"Mövzu üzrə bilik səviyyən"}: <b>${R.retake?(tp(R.n)??R.p):R.p}%</b> ${lvl(R.retake?(tp(R.n)??R.p):R.p)[1]}</p></div><button class="p" onclick="go('mist')" ${R.w+R.e?"":"disabled"}>Səhv etdiyin suallara bax</button> <button onclick="start('${R.n}',1)" ${!R.exam&&S.t[R.n].wrong.length?"":"disabled"}>Səhvlərdən yenidən test yarat</button> <button onclick="go('home')">Ana səhifə</button>`}
+if(v==="mist"){const m=R.items.filter(x=>x.u!==x.q[2]);A.innerHTML=`<button onclick="go('res')">← Nəticə</button><h1>Səhvlərim</h1>`+m.map(x=>`<div class="card"><b>${x.q[0]}</b><div class="bad">Sənin cavabın: ${x.u===undefined?"boş":L[x.u]+") "+x.q[1][x.u]}</div><div class="ok">Düzgün cavab: ${L[x.q[2]]}) ${x.q[1][x.q[2]]}</div><div class="m">${x.q[3]}</div></div>`).join("")}}
+render();
+</script></body></html>
